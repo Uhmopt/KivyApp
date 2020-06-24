@@ -27,25 +27,73 @@
                 on_release:
                     root.parent.current = "sign_in_screen"
 
-            ThemedInput:
+            TextInput:
                 id: email
-                size_hint: .7 ,.1
-                pos_hint: {"center_x": .6, "top": .7}
-                hint_text: "Email"
+                size_hint: .7 ,.08
+                pos_hint: {"top": .7, "right": 0.95}
+                multiline: False
+                valign: "bottom"   
                 bg_color: (1,1,1,1)
                 highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
                 highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
+                bottom_color: self.highlight_color1
+                on_text_validate: password.focus = True
+                canvas.before:
+                    Color:
+                        rgba: self.bottom_color if self.bottom_color else (0,0,0,1)
+                    Rectangle:
+                        size: (self.size[0], self.size[1]/15.)
+                        pos: self.pos
 
-
-            ThemedInput:
+                on_focus:
+                    self.bottom_color = self.highlight_color2 if self.focused else self.highlight_color1
+                    Animation(animated_center_y=(0.68 if (self.focused) else 0.65)).start(the_label)
+            Label:
+                id: the_label
+                color: (1,0,0,1)
+                text: "email"
+                valign: "middle"
+                size_hint: None, None
+                size: self.texture_size
+                animated_center_y: .65
+                animated_x: .93
+                pos_hint: {"center_y": self.animated_center_y, "right": self.animated_x}
+            TextInput:
                 id: password
-                size_hint: .7 ,.1
+                size_hint: .7 ,.08
                 pos_hint: {"center_x": .6, "top": .575}
-                hint_text: "Password"
                 password: True
+                multiline: False
+                valign: "middle"    
                 bg_color: (1,1,1,1)
                 highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
                 highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
+                on_text_validate:
+                    root.parent.parent.sign_up(email.text, password.text)
+                    Animation(opacity=0, duration=0.5).start(message)
+                    sign_in_button.opacity = 0
+                    sign_in_button.disabled = True
+                    root.parent.parent.display_loading_screen()
+                canvas.before:
+                    Color:
+                        rgba: self.bottom_color if self.bottom_color else (0,0,0,1)
+                    Rectangle:
+                        size: (self.size[0], self.size[1]/15.)
+                        pos: self.pos
+
+                on_focus:
+                    self.bottom_color = self.highlight_color2 if self.focused else self.highlight_color1
+                    Animation(animated_center_y=(0.55 if (self.focused) else 0.52)).start(the_label1)
+            Label:
+                id: the_label1
+                color: (1,0,0,1)
+                text: "password"
+                valign: "middle"
+                size_hint: None, None
+                size: self.texture_size
+                animated_center_y: .52
+                animated_x: .93
+                pos_hint: {"center_y": self.animated_center_y, "right": self.animated_x}
 
             ThemedButton:
                 text: "[u]Create Account[/u]"
