@@ -1,0 +1,59 @@
+<SpinnerScreen>: 
+    GridLayout:
+        cols: 2
+        FloatLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0.1, 1,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Spinner: 
+                id: spinner_id 
+                text: "Python"
+                values: ["Python", "Java", "C++", "C", "C#", "PHP"] 
+                size_hint: None, None
+                size: 150, 50
+                pos_hint:{'center_x':.3, 'top': .8} 
+        FloatLayout:
+            canvas.before:
+                Color:
+                    rgba: 0, 0.584, 1,1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size    
+            Button:
+                canvas.before:
+                    Color:
+                        rgba: 1,1,1,1
+                    Line:
+                        width: 1
+                        rectangle: self.x, self.y, self.width, self.height
+                text:"Logout"
+                size_hint: .15 ,.05
+                pos_hint: {"center_x": .85, "top": .95}
+                background_color: (1,1,1,0)
+                color: 1,1,1,1
+                on_release:
+                    root.parent.parent.log_out()
+                    root.parent.current = "logout"
+            Button:
+                canvas.before:
+                    Color:
+                        rgba: 1,1,1,1
+                    Line:
+                        width: 1
+                        rectangle: self.x, self.y, self.width, self.height
+                text:"Home"
+                size_hint: .15 ,.05
+                pos_hint: {"center_x": .65, "top": .95}
+                background_color: (1,1,1,0)
+                color: 1,1,1,1
+                on_release:
+                    root.parent.current = "home"
+            Label:
+                id:value
+                text: "Button is " + spinner_id.text + " clicked"
+                font_size: 30
+                color: (0,0,0,1)
+                pos_hint: { 'center_x': .5, 'top': 1.3}

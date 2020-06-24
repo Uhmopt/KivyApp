@@ -1,0 +1,65 @@
+<HomeScreen>:
+
+	canvas.before:
+		Rectangle:
+			size: self.size
+			pos: self.pos
+			source: "background.jpg"
+	FloatLayout:
+		Button:
+			canvas.before:
+				Color:
+					rgba: 1,1,1,1
+				Line:
+					width: 1
+					rectangle: self.x, self.y, self.width, self.height
+			text:"Folium"
+			size_hint: .1, .05
+			pos_hint: {"center_x": .1, "top": .95}
+			background_color: (1,1,1,0)
+			color: 1,1,1,1
+			on_release:
+				root.windowdraw()
+		Button:
+			canvas.before:
+				Color:
+					rgba: 1,1,1,1
+				Line:
+					width: 1
+					rectangle: self.x, self.y, self.width, self.height
+			text:"Altair"
+			size_hint: .1 ,.05
+			pos_hint: {"center_x": .27, "top": .95}
+			background_color: (1,1,1,0)
+			color: 1,1,1,1
+			on_release:
+				root.chartwindow()
+		Button:
+			canvas.before:
+				Color:
+					rgba: 1,1,1,1
+				Line:
+					width: 1
+					rectangle: self.x, self.y, self.width, self.height
+			text:"Spinner"
+			size_hint: .1 ,.05
+			pos_hint: {"center_x": .44, "top": .95}
+			background_color: (1,1,1,0)
+			color: 1,1,1,1
+			on_release:
+				root.parent.current = "spinner"
+		Button:
+			canvas.before:
+				Color:
+					rgba: 1,1,1,1
+				Line:
+					width: 1
+					rectangle: self.x, self.y, self.width, self.height
+			text:"Logout"
+			size_hint: .15 ,.05
+			pos_hint: {"center_x": .85, "top": .95}
+			background_color: (1,1,1,0)
+			color: 1,1,1,1
+			on_release:
+            	root.parent.parent.log_out()
+				root.parent.current = "logout"

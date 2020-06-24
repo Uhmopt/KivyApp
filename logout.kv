@@ -1,0 +1,23 @@
+<Logout>:
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1,1,1,1
+            Rectangle:
+                pos: self.pos
+                size: self.size    
+        Image:
+            source: 'logo.png'
+            pos_hint: {'center_x':.5, 'top':1.1}
+            size_hint: 1, 1
+            allow_stretch: False
+            keep_ratio: True
+        Label:
+            id:letter
+            text: "Thank you! Roger"
+            font_size: 40
+            color: (0,0,0,1)
+            pos_hint: {"center_x": .5, "top": .85}
+            
+            
+            
