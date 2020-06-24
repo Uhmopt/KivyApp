@@ -41,19 +41,21 @@
                 pos_hint: {"top": .7, "right": 0.95}
                 multiline: False
                 focus: True
-                valign: "bottom"   
                 bg_color: (1,1,1,1)
                 highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
                 highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
                 bottom_color: self.highlight_color1
-                on_text_validate: password.focus = True
+                on_text_validate: 
+                    password.focus = True
+                write_tab: False
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]                    
                 canvas.before:
                     Color:
                         rgba: self.bottom_color if self.bottom_color else (0,0,0,1)
                     Rectangle:
                         size: (self.size[0], self.size[1]/15.)
                         pos: self.pos
-                on_focus:
+                on_focus:                    
                     self.bottom_color = self.highlight_color2 if self.focused else self.highlight_color1
                     Animation(animated_center_y=(0.68 if (self.focused) else 0.65)).start(the_label)
             Label:
@@ -72,7 +74,9 @@
                 pos_hint: {"center_x": .6, "top": .575}
                 password: True
                 multiline: False    
+                write_tab: False
                 bg_color: (1,1,1,1)
+                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
                 highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
                 highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
                 on_text_validate:
