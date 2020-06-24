@@ -94,8 +94,6 @@ class HomeScreen(Screen):
     # Put the five layers into a chart and bind the data
     m = alt.layer(
         line, selectors, points, rules, text
-    ).properties(
-        width=600, height=300
     )
     m.save('chart.html')
 
