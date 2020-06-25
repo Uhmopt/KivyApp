@@ -12,7 +12,6 @@ import os.path
 
 # Load the kv files
 folder = os.path.dirname(os.path.realpath(__file__))
-Builder.load_file(folder + "/themedwidgets.kv")
 Builder.load_file(folder + "/homescreen.kv")
 Builder.load_file(folder + "/logout.kv")
 Builder.load_file(folder + "/spinnerscreen.kv")

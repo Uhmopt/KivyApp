@@ -48,7 +48,7 @@
                 on_text_validate: 
                     password.focus = True
                 write_tab: False
-                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]                    
+                padding: 7, self.height / 2.0 - (self.line_height / 2.0) * len(self._lines)
                 canvas.before:
                     Color:
                         rgba: self.bottom_color if self.bottom_color else (0,0,0,1)
@@ -76,7 +76,7 @@
                 multiline: False    
                 write_tab: False
                 bg_color: (1,1,1,1)
-                padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0]
+                padding: 7, self.height / 2.0 - (self.line_height / 2.0) * len(self._lines)
                 highlight_color1: root.parent.parent.secondary_color if root.parent else (0,0,0,1)
                 highlight_color2: root.parent.parent.tertiary_color if root.parent else (0,0,0,1)
                 on_text_validate:
