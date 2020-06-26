@@ -24,6 +24,7 @@ class WelcomeScreen(Screen, EventDispatcher):
     refresh_token = ""
     logout_success = BooleanProperty(False)  # Called upon successful sign out
     refresh_token_file = App.get_running_app().user_data_dir + "/refresh_token.txt"
+    google_token_file = "token.pickle"
     
     def on_logout_success(self, *args):
         """Overwrite this method to switch to your app's home screen.
@@ -45,5 +46,7 @@ class WelcomeScreen(Screen, EventDispatcher):
         if os.path.exists(self.refresh_token_file):
             os.remove(self.refresh_token_file)
         self.create_refresh_token(self.refresh_token_file)
+        if os.path.exists(self.google_token_file):
+            os.remove(self.google_token_file)
         self.logout_success = True
 

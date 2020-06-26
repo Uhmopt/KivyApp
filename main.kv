@@ -16,9 +16,7 @@ ScreenManager:
         on_login_success:
             # Defining this function lets you program what to do when the
             # user has logged in (probably you'll want to change screens)!
-            # Get the important user info
-            app.user_localId = self.localId
-            app.user_idToken = self.idToken  
+            # Get the important user info 
             sm.current = 'welcomescreen' 
     WelcomeScreen:
         id: welcomescreen

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from kivy.uix.screenmanager import Screen
 from kivy.properties import BooleanProperty, StringProperty
 from kivy.event import EventDispatcher
@@ -11,6 +12,16 @@ sys.path.append("/".join(x for x in __file__.split("/")[:-1]))
 from json import dumps
 import os.path
 import progressspinner
+import pickle
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+
+
+# fireapp = firebase_admin.initialize_app(firecred)
+
+# If modifying these scopes, delete the file token.pickle.
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 # Load the kv files
 folder = os.path.dirname(os.path.realpath(__file__))
@@ -18,7 +29,6 @@ Builder.load_file(folder + "/themedwidgets.kv")
 Builder.load_file(folder + "/signinscreen.kv")
 Builder.load_file(folder + "/createaccountscreen.kv")
 Builder.load_file(folder + "/loadingpopup.kv")
-
 # Import the screens used to log the user in
 # from welcomescreen import WelcomeScreen
 from signinscreen import SignInScreen
@@ -45,8 +55,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
     debug = False
     popup = Factory.LoadingPopup()
     popup.background = folder + "/transparent_image.png"
-
-
+    
     def on_login_success(self, *args):
         """Overwrite this method to switch to your app's home screen.
         """
@@ -56,12 +65,14 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         """When the web api key is set, look for an existing account in local
         memory.
         """
-        # Try to load the users info if they've already created an account
+        # Try to load the users info if they've already created an account        
         self.refresh_token_file = App.get_running_app().user_data_dir + "/refresh_token.txt"
+        
         if self.debug:
             print("Looking for a refresh token in:", self.refresh_token_file)
-        if os.path.exists(self.refresh_token_file):
-            self.load_saved_account()
+         
+        if os.path.exists(self.refresh_token_file):           
+            self.load_saved_account()            
 
     def sign_up(self, email, password):
         """If you don't want to use Firebase, just overwrite this method and
@@ -78,7 +89,54 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
                    on_success=self.successful_login,
                    on_failure=self.sign_up_failure,
                    on_error=self.sign_up_error)
+    def sign_in(self, email, password):
+        """Called when the "Log in" button is pressed.
 
+        Sends the user's email and password in an HTTP request to the Firebase
+        Authentication service.
+        """
+        if self.debug:
+            print("Attempting to sign user in: ", email, password)
+        sign_in_url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=" + self.web_api_key
+        sign_in_payload = dumps(
+            {"email": email, "password": password, "returnSecureToken": True})
+
+        UrlRequest(sign_in_url, req_body=sign_in_payload,
+                   on_success=self.successful_login,
+                   on_failure=self.sign_in_failure,
+                   on_error=self.sign_in_error)
+    def google_sign_in(self):
+        """Shows basic usage of the Gmail API.
+        Lists the user's Gmail labels.
+        """
+        creds = None
+        # The file token.pickle stores the user's access and refresh tokens, and is
+        # created automatically when the authorization flow completes for the first
+        # time.
+        if os.path.exists('token.pickle'):
+            with open('token.pickle', 'rb') as token:
+                creds = pickle.load(token)
+        # If there are no (valid) credentials available, let the user log in.
+        if not creds or not creds.valid:
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    'credentials.json', SCOPES)
+                creds = flow.run_local_server(port=0)
+            # Save the credentials for the next run
+            with open('token.pickle', 'wb') as token:
+                pickle.dump(creds, token)
+        service = build('gmail', 'v1', credentials=creds)
+        # Call the Gmail API
+        results = service.users().getProfile(userId='me').execute()        
+        email = results.get('emailAddress')
+        if not email:
+            print('No labels found.')
+        else:
+            self.login_success = True
+            if self.debug:
+                print("Successfully logged in a user: ")
     def successful_login(self, urlrequest, log_in_data):
         """Collects info from Firebase upon successfully registering a new user.
         """
@@ -113,23 +171,6 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         self.hide_loading_screen()
         if self.debug:
             print("Sign up Error: ", args)
-
-    def sign_in(self, email, password):
-        """Called when the "Log in" button is pressed.
-
-        Sends the user's email and password in an HTTP request to the Firebase
-        Authentication service.
-        """
-        if self.debug:
-            print("Attempting to sign user in: ", email, password)
-        sign_in_url = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=" + self.web_api_key
-        sign_in_payload = dumps(
-            {"email": email, "password": password, "returnSecureToken": True})
-
-        UrlRequest(sign_in_url, req_body=sign_in_payload,
-                   on_success=self.successful_login,
-                   on_failure=self.sign_in_failure,
-                   on_error=self.sign_in_error)
 
     def sign_in_failure(self, urlrequest, failure_data):
         """Displays an error message to the user if their attempt to create an
@@ -198,14 +239,15 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         file exists.
         """
         if self.debug:
-            print("Attempting to log in a user automatically using a refresh token.")
-        self.load_refresh_token()
-        refresh_url = "https://securetoken.googleapis.com/v1/token?key=" + self.web_api_key
-        refresh_payload = dumps({"grant_type": "refresh_token", "refresh_token": self.refresh_token})
-        UrlRequest(refresh_url, req_body=refresh_payload,
-                   on_success=self.successful_account_load,
-                   on_failure=self.failed_account_load,
-                   on_error=self.failed_account_load)
+            print("Attempting to log in a user automatically using a refresh token.")        
+        else:
+            self.load_refresh_token()
+            refresh_url = "https://securetoken.googleapis.com/v1/token?key=" + self.web_api_key
+            refresh_payload = dumps({"grant_type": "refresh_token", "refresh_token": self.refresh_token})
+            UrlRequest(refresh_url, req_body=refresh_payload,
+                    on_success=self.successful_account_load,
+                    on_failure=self.failed_account_load,
+                    on_error=self.failed_account_load)
 
     def successful_account_load(self, urlrequest, loaded_data):
         """Sets the idToken and localId variables upon successfully loading an
@@ -229,5 +271,3 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
 
     def hide_loading_screen(self, *args):
         self.popup.dismiss()
-
-

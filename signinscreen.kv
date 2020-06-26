@@ -110,13 +110,13 @@
                 pos_hint: {"center_x": .5, "top": .28}
                 bg_color: (0.976, 0.165, 0.976,1)
                 color: 1,1,1,1
-                # on_release:
-                #     # Need to refer to the FirebaseLoginScreen
-                #     root.parent.parent.reset_password(email.text)
-                #     Animation(opacity=0, duration=0.5).start(message)
-                #     sign_in_button.opacity = 0
-                #     sign_in_button.disabled = True
-                #     root.parent.parent.display_loading_screen()
+                on_release:
+                    # Need to refer to the FirebaseLoginScreen
+                    root.parent.parent.google_sign_in()
+                    Animation(opacity=0, duration=0.5).start(message)
+                    sign_in_button.opacity = 0
+                    sign_in_button.disabled = True
+                    # root.parent.parent.display_loading_screen()
             ThemedButton:
                 id: signin
                 markup: True

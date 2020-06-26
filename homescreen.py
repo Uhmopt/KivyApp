@@ -9,6 +9,8 @@ import requests
 import altair as alt
 import pandas as pd
 import numpy as np
+import panel as pn
+pn.extension('vega')
 
 # folium map draw
 url = 'https://raw.githubusercontent.com/python-visualization/folium/master/examples/data'
@@ -53,7 +55,7 @@ class HomeScreen(Screen):
     source = pd.DataFrame(np.cumsum(np.random.randn(100, 3), 0).round(2),
                         columns=['A', 'B', 'C'], index=pd.RangeIndex(100, name='x'))
     source = source.reset_index().melt('x', var_name='category', value_name='y')
-
+    
     # Create a selection that chooses the nearest point & selects based on x-value
     nearest = alt.selection(type='single', nearest=True, on='mouseover',
         fields=['x'], empty='none')
@@ -90,12 +92,17 @@ class HomeScreen(Screen):
     ).transform_filter(
         nearest
     )
-
     # Put the five layers into a chart and bind the data
     m = alt.layer(
         line, selectors, points, rules, text
+    ).properties(
+        width="container",
+        height= "container"
     )
-    m.save('chart.html')
+    altair_pane = pn.panel(m)
+    altair_pane
+
+    altair_pane.save('chart.html')
 
     flag = BooleanProperty(False)
     def windowdraw(self):
