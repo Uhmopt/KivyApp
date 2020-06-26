@@ -67,6 +67,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
         """
         # Try to load the users info if they've already created an account        
         self.refresh_token_file = App.get_running_app().user_data_dir + "/refresh_token.txt"
+        self.google_token_file = "token.pickle"
         
         if self.debug:
             print("Looking for a refresh token in:", self.refresh_token_file)
@@ -89,6 +90,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
                    on_success=self.successful_login,
                    on_failure=self.sign_up_failure,
                    on_error=self.sign_up_error)
+    
     def sign_in(self, email, password):
         """Called when the "Log in" button is pressed.
 
@@ -105,6 +107,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
                    on_success=self.successful_login,
                    on_failure=self.sign_in_failure,
                    on_error=self.sign_in_error)
+    
     def google_sign_in(self):
         """Shows basic usage of the Gmail API.
         Lists the user's Gmail labels.
@@ -129,7 +132,7 @@ class FirebaseLoginScreen(Screen, EventDispatcher):
                 pickle.dump(creds, token)
         service = build('gmail', 'v1', credentials=creds)
         # Call the Gmail API
-        results = service.users().getProfile(userId='me').execute()        
+        results = service.users().getProfile(userId='me').execute()
         email = results.get('emailAddress')
         if not email:
             print('No labels found.')
